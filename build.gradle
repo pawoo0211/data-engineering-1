@@ -26,6 +26,7 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-batch'
+	implementation 'org.springframework.kafka:spring-kafka'
 	implementation 'net.datafaker:datafaker:1.8.0'
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.0'
 	implementation 'com.fasterxml.jackson.core:jackson-core:2.14.0'
