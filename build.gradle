@@ -1,44 +1,45 @@
-plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.5.5'
-	id 'io.spring.dependency-management' version '1.1.7'
-}
+plugins { id 'java' }
 
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
-description = 'Demo project for Spring Boot'
 
-java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
-	}
-}
+repositories { mavenCentral() }
 
-configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
-}
-
-repositories {
-	mavenCentral()
+ext {
+	flinkVersion = '1.19.0'          // Flink 본체
+	kafkaConnectorVersion = '3.2.0-1.19' // 또는 '3.3.0-1.19'
+	jacksonVersion = '2.14.0'
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-batch'
-	implementation 'org.springframework.kafka:spring-kafka'
-	implementation 'net.datafaker:datafaker:1.8.0'
-	implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.0'
-	implementation 'com.fasterxml.jackson.core:jackson-core:2.14.0'
-	implementation 'com.fasterxml.jackson.core:jackson-annotations:2.14.0'
-	compileOnly 'org.projectlombok:lombok'
-	runtimeOnly 'com.h2database:h2'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.batch:spring-batch-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	// Flink (스트리밍 전용이면 flink-java는 생략 가능)
+	implementation "org.apache.flink:flink-streaming-java:${flinkVersion}"
+	implementation "org.apache.flink:flink-clients:${flinkVersion}"
+
+	// Kafka 커넥터 (KafkaSource/KafkaSink)
+	implementation "org.apache.flink:flink-connector-kafka:${kafkaConnectorVersion}"
+
+	// Jackson
+	implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
+	implementation "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}"
+	implementation "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
+
+	// Logging
+	implementation "org.slf4j:slf4j-api:2.0.7"
+	runtimeOnly "ch.qos.logback:logback-classic:1.4.7"
+
+	// Lombok
+	compileOnly "org.projectlombok:lombok:1.18.30"
+	annotationProcessor "org.projectlombok:lombok:1.18.30"
+	testCompileOnly "org.projectlombok:lombok:1.18.30"
+	testAnnotationProcessor "org.projectlombok:lombok:1.18.30"
+
+	// JUnit
+	testImplementation "org.junit.jupiter:junit-jupiter:5.9.3"
 }
 
-tasks.named('test') {
-	useJUnitPlatform()
+test { useJUnitPlatform() }
+
+configurations.all {
+	exclude group: 'org.slf4j', module: 'slf4j-log4j12'
 }
